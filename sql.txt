@@ -1,0 +1,20 @@
+CREATE SCHEMA `salt_academy_exam_1` ;
+
+CREATE TABLE `salt_academy_exam_1`.`article` (
+  `id` INT NOT NULL,
+  `code_article` VARCHAR(100) NULL,
+  `title_original` VARCHAR(100) NULL,
+  `text_original` TEXT NULL,
+  `date` TIMESTAMP NULL,
+  `banner` VARCHAR(100) NULL,
+  `author` VARCHAR(100) NULL,
+  PRIMARY KEY (`id`));
+
+CREATE TABLE `salt_academy_exam_1`.`translation` (
+  `id` INT NOT NULL,
+  `code_article` VARCHAR(100) NULL,
+  `code_language` VARCHAR(2) NULL,
+  `title` VARCHAR(100) NULL,
+  `text` TEXT NULL,
+  PRIMARY KEY (`id`));
+

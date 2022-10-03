@@ -16,11 +16,10 @@ type Article struct {
 	author        string
 	thumbs        string // for image with small quality
 	isHighlight   bool   // for flagging
-	translation   Translation
+	translation   []*Translation
 }
 
 type Translation struct {
-	codeArticle  string // generate code for relation
 	codeLanguage string
 	title        string
 	text         string
@@ -33,13 +32,26 @@ type DTONewCreateArticle struct {
 	Author        string
 	Thumbs        string
 	IsHighLight   bool
-	Translation   DTOTranslation
+	Translation   []DTOTranslation
 }
 
 type DTOTranslation struct {
 	CodeLanguage string
 	Title        string
 	Text         string
+}
+
+func NewAddTranslation(translation DTOTranslation) *Translation {
+	return &Translation{
+		codeLanguage: translation.CodeLanguage,
+		title:        translation.Title,
+		text:         translation.Text,
+	}
+}
+
+func (article *Article) AddTranslation(dataTranslations []*Translation) *Article {
+	article.translation = dataTranslations
+	return article
 }
 
 // func create data
@@ -51,12 +63,22 @@ func NewCreateArticle(dataCreate DTONewCreateArticle) (*Article, error) {
 		author:        dataCreate.Author,
 		thumbs:        dataCreate.Thumbs,
 		isHighlight:   dataCreate.IsHighLight,
-		translation: Translation{
-			codeLanguage: dataCreate.Translation.CodeLanguage,
-			title:        dataCreate.Translation.Title,
-			text:         dataCreate.Translation.Text,
-		},
 	}
+
+	// create slice
+	translations := make([]*Translation, 0)
+	// loop and append to DTO
+	for _, tr := range dataCreate.Translation {
+		translation := NewAddTranslation(DTOTranslation{
+			CodeLanguage: tr.CodeLanguage,
+			Title:        tr.Title,
+			Text:         tr.Text,
+		})
+
+		translations = append(translations, translation)
+	}
+	// add to struct utama
+	dataArticle.AddTranslation(translations)
 
 	err := dataArticle.validate()
 	if err != nil {
@@ -111,8 +133,6 @@ func (data *Article) generateCode() (*Article, error) {
 	valueString := strconv.Itoa(rand.Intn(max-min+1) + min)
 
 	data.codeArticle = "XXXX-" + valueString
-	data.translation.codeArticle = "XXXX-" + valueString
-
 	return data, nil
 }
 
@@ -162,18 +182,18 @@ func (data *Article) GetIsHighLightArtikel() bool {
 	return data.isHighlight
 }
 
-func (data *Article) GetTranslationAll() Translation {
+func (data *Article) GetTranslationAll() []*Translation {
 	return data.translation
 }
 
-func (data *Article) GetTranslationTitle() string {
-	return data.translation.title
+func (data *Translation) GetCodeLanguageTranslation() string {
+	return data.codeLanguage
 }
 
-func (data *Article) GetTranslationCodeLanguage() string {
-	return data.translation.codeLanguage
+func (data *Translation) GetTitleTranslation() string {
+	return data.title
 }
 
-func (data *Article) GetTranslationText() string {
-	return data.translation.text
+func (data *Translation) GetTextTranslation() string {
+	return data.text
 }

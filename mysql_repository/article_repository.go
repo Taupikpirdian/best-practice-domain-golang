@@ -39,11 +39,14 @@ func (repo *ArticleRepositoryMysqlInteractor) Store(ctx context.Context, dataArt
 		return errMysql
 	}
 
+	translationData := dataArticle.GetTranslationAll()
 	// query insert to table translation
 	insertQueryTranslation := "INSERT INTO translation(code_article, code_language, title, text) VALUES(?, ?, ?, ?)"
 
-	_, errMysqlTranslation = repo.dbConn.Exec(insertQueryTranslation, dataArticle.GetCodeArtikel(), dataArticle.GetTranslationCodeLanguage(), dataArticle.GetTranslationTitle(),
-		dataArticle.GetTranslationText())
+	for _, td := range translationData {
+		// save to DB
+		_, errMysqlTranslation = repo.dbConn.Exec(insertQueryTranslation, dataArticle.GetCodeArtikel(), td.GetCodeLanguageTranslation(), td.GetTitleTranslation(), td.GetTextTranslation())
+	}
 
 	if errMysqlTranslation != nil {
 		return errMysqlTranslation
